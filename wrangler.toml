@@ -1,8 +1,8 @@
-# Cloudflare Worker for the public Ask JEV page.
+# Cloudflare Worker for the public Ask JEV page (https://jev.ask-jev.workers.dev).
 #   npx wrangler login
 #   npx wrangler secret put TYPESAFE_API_KEY     # paste the key from .env
 #   npx wrangler deploy
-name = "ask-jev"
+name = "jev"
 main = "worker/index.js"
 compatibility_date = "2026-09-22"
 workers_dev = true

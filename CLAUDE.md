@@ -8,7 +8,7 @@ the source of truth for request/response shapes.
   skill (`.claude/skills/jev/SKILL.md`, symlinked into `~/.claude/skills/jev`).
 - `jev_ui.py` + `ui/index.html` — local web UI over `ask_jev.ask()` (port 8765; `Ask JEV.command` launches it;
   `.claude/launch.json` has a `jev-ui` preview config). Vanilla HTML/CSS/JS, no build step.
-- `worker/index.js` + `wrangler.toml` — public Cloudflare Worker (name `ask-jev`): serves `ui/` as static
+- `worker/index.js` + `wrangler.toml` — public Cloudflare Worker (name `jev`, https://jev.ask-jev.workers.dev): serves `ui/` as static
   assets, proxies `/api/ask` with the `TYPESAFE_API_KEY` secret, rate-limited. The parser is a port of
   `ask_jev.py` — change both together and run `npm test` (`worker/parity.test.mjs`).
 - `jev_brainstorm.py` — full decision spec → ranked recommendation. Specs live in `decisions/`.

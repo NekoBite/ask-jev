@@ -1,6 +1,6 @@
 # Ask JEV — TypeSafe's Jev as a judgment engine
 
-**Try it: https://ask-jev.ask-jev.workers.dev** — a plain-English question in, a calibrated
+**Try it: https://jev.ask-jev.workers.dev** — a plain-English question in, a calibrated
 typed answer out, in about a second. No signup; it runs on the owner's TypeSafe key and is
 rate-limited, so be considerate.
 
