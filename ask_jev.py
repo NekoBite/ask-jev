@@ -9,7 +9,7 @@ a natural sentence into one of them and turns the typed answer back into one lin
   how much    "How risky is migrating this week?"             -> Score  (position on described levels)
 
 Usage:
-  python3 ask_jev.py "Should Trilumi add a CMS?"
+  python3 ask_jev.py "Should a one-person startup add a CMS?"
   python3 ask_jev.py "Which fits best: Astro, Next.js, or plain HTML?" --context "one-person team, static marketing site"
   python3 ask_jev.py "How risky is migrating this week?" --context-file notes.md
   python3 ask_jev.py "Is the copy too salesy?" "Is the copy too long?" --context-file page.txt   # several questions, one call
