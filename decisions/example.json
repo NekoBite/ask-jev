@@ -1,0 +1,78 @@
+{
+  "title": "Side project: what to build next?",
+  "question": "Which option should the maker take next, given the whole state, to best serve `maker.goal` within `maker.time_available`?",
+  "state": {
+    "maker": {
+      "who": "Solo developer building a small recipe-sharing web app on evenings and weekends.",
+      "goal": "Reach 100 weekly active users within three months and learn whether anyone will pay.",
+      "time_available": "About six hours a week."
+    },
+    "product": {
+      "status": "Live for six weeks. 40 signups, 9 weekly actives. Users can post recipes and browse; there is no search, no mobile layout, and no way to save favourites.",
+      "feedback": [
+        "I can't find the recipe I saw last week.",
+        "Looks broken on my phone.",
+        "Would love to follow specific cooks.",
+        "Why is there no dark mode?"
+      ]
+    }
+  },
+  "options": {
+    "search": "Add full-text search over recipes and ingredients.",
+    "mobile": "Make the existing pages work well on phones.",
+    "favourites": "Let users save recipes and follow other cooks.",
+    "paid_tier": "Add a paid tier (ad-free, private recipes) to test willingness to pay now."
+  },
+  "dimensions": {
+    "impact": {
+      "weight": 0.5,
+      "instructions": "If the maker built `option` next, how much would it move the product toward `maker.goal`, given `product.status` and `product.feedback`?",
+      "levels": [
+        "No noticeable change in how people use the app",
+        "Small polish: a few users are happier, but retention and growth stay the same",
+        "Clear improvement: removes one concrete reason people stop coming back",
+        "Major improvement: the app becomes materially more useful every week",
+        "Transformational: the main blocker to the goal is gone"
+      ]
+    },
+    "effort": {
+      "weight": 0.3,
+      "instructions": "How much of the maker's time (`maker.time_available`) would `option` realistically take before it is live?",
+      "levels": [
+        "An evening",
+        "One week of evenings",
+        "Two to three weeks",
+        "A month or more",
+        "Longer than the three-month window"
+      ]
+    },
+    "risk": {
+      "weight": 0.2,
+      "instructions": "How likely is `option` to break something that works today, or to stall half-finished?",
+      "levels": [
+        "Very low: additive and easy to revert",
+        "Low: touches existing pages but in contained ways",
+        "Moderate: reworks core flows that could regress",
+        "High: changes data model or pricing; mistakes are visible to every user",
+        "Very high: likely to be abandoned before it ships"
+      ]
+    }
+  },
+  "diagnostics": {
+    "retention_problem": { "instructions": "Is the main problem that existing users do not come back, rather than that too few people sign up?" },
+    "ready_to_charge": { "instructions": "Is there enough evidence of value that charging money now would be a fair test rather than premature?" }
+  },
+  "idea_pools": {
+    "growth_ideas": {
+      "instructions": "Which single growth tactic is most likely to bring new weekly active users to this app over the next month?",
+      "candidates": {
+        "share_links": "Public share links for each recipe with a nice preview card.",
+        "weekly_digest": "A weekly email digest of new recipes to existing users.",
+        "reddit_posts": "Posting the best recipes to relevant subreddits with a link back.",
+        "invite_friends": "An 'invite a friend' prompt after a user posts their first recipe."
+      },
+      "effort_instructions": "How much of the maker's time would `candidate` take to ship?",
+      "effort_levels": ["An evening", "A week of evenings", "Several weeks"]
+    }
+  }
+}

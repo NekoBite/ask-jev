@@ -1,0 +1,7 @@
+.env
+runs/
+__pycache__/
+.DS_Store
+node_modules/
+.wrangler/
+decisions/trilumi_website.json

@@ -1,0 +1,29 @@
+# Cloudflare Worker for the public Ask JEV page.
+#   npx wrangler login
+#   npx wrangler secret put TYPESAFE_API_KEY     # paste the key from .env
+#   npx wrangler deploy
+name = "ask-jev"
+main = "worker/index.js"
+compatibility_date = "2026-09-22"
+workers_dev = true
+
+[assets]
+directory = "./ui"          # index.html is served at /; the Worker only handles /api/*
+
+# One key for everyone: a few asks per minute per visitor, and a cap for the whole deployment.
+[[ratelimits]]
+name = "IP_LIMIT"
+namespace_id = "1001"
+  [ratelimits.simple]
+  limit = 8
+  period = 60
+
+[[ratelimits]]
+name = "GLOBAL_LIMIT"
+namespace_id = "1002"
+  [ratelimits.simple]
+  limit = 120
+  period = 60
+
+[observability]
+enabled = true

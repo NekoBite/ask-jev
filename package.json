@@ -1,0 +1,14 @@
+{
+  "name": "ask-jev",
+  "private": true,
+  "type": "module",
+  "description": "Ask TypeSafe's Jev a plain-English question and get a calibrated typed answer — CLI, local UI, and a public Cloudflare Worker.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node worker/parity.test.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}

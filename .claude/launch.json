@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "jev-ui",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["jev_ui.py", "--no-browser", "--port", "8765"],
+      "port": 8765
+    }
+  ]
+}
