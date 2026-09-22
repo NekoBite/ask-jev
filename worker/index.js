@@ -30,8 +30,8 @@ class JevError extends Error {}
 
 const CJK_RE = /[一-鿿㐀-䶿]/;
 const THAI_RE = /[฀-๿]/;
-const TRAD_CHARS = new Set("們這個說為會應該嗎還選風險難緊價麼於與國時經學問題發現務來對開關點動長車電馬鳥東門買賣讓認識語頁網後");
-const SIMP_CHARS = new Set("们这个说为会应该吗还选风险难紧价么于与国时经学问题发现务来对开关点动长车电马鸟东门买卖让认识语页网后");
+const TRAD_CHARS = new Set("們這個說為會應該嗎還選風險難緊價麼於與國時經學問題發現務來對開關點動長車電馬鳥東門買賣讓認識語頁網後種線產測環紅綠烏龍幣費設計態導過進遠運連業專傳轉華達體臺灣廣場際標準積極權觀歡圖書數樓機檢驗資質貴賺錢銀鐵錯鍵願顯頭類實寫將尋層屬島師帶幫廠復從愛戰擇護擴斷舊曆條樣歷氣決況淨濟無熱營獨獲畫當療蓋處號術裝見規視覺許話誰課調談請論講謝證議讀變負財貨責賽軟較輕輸農遊適郵鄉醫釋裡間閱陽隨雙雜離靈領額顧飛飯館髮鬥魚麗齊齒龜兩親");
+const SIMP_CHARS = new Set("们这个说为会应该吗还选风险难紧价么于与国时经学问题发现务来对开关点动长车电马鸟东门买卖让认识语页网后种线产测环红绿乌龙币费设计态导过进远运连业专传转华达体台湾广场际标准积极权观欢图书数楼机检验资质贵赚钱银铁错键愿显头类实写将寻层属岛师带帮厂复从爱战择护扩断旧历条样历气决况净济无热营独获画当疗盖处号术装见规视觉许话谁课调谈请论讲谢证议读变负财货责赛软较轻输农游适邮乡医释里间阅阳随双杂离灵领额顾飞饭馆发斗鱼丽齐齿龟两亲");
 
 function detectLang(q) {
   if (THAI_RE.test(q)) return "th";
@@ -100,8 +100,8 @@ function splitOptionsEn(question) {
   const body = question.trim().replace(/[?.!\s]+$/, "").trim();
   if (!OR_RE.test(body) && !body.includes(",")) return [];
   let seg, m;
-  if (body.includes(":")) {
-    seg = body.slice(body.indexOf(":") + 1);
+  if (/[:;]/.test(body)) {
+    seg = body.slice(body.search(/[:;]/) + 1);
   } else if ((m = body.match(/\b(?:between|among|out of)\s+(.+)$/i))) {
     seg = m[1];
   } else if (WHICH_RE.test(body) && body.includes(",")) {
@@ -155,8 +155,8 @@ const ZH_LEVEL_KEYS = [
 function splitOptionsZh(body) {
   body = stripChars(stripChars(body, ZH_PUNCT).replace(ZH_OPTION_TAIL, ""), ZH_PUNCT);
   let seg;
-  if (/[：:]/.test(body)) {
-    seg = body.slice(body.search(/[：:]/) + 1);
+  if (/[：:；;]/.test(body)) {
+    seg = body.slice(body.search(/[：:；;]/) + 1);
   } else {
     seg = body;
     const firstSep = seg.match(ZH_CHOICE_SEP);
@@ -204,8 +204,8 @@ const TH_LEVEL_KEYS = [
 
 function splitOptionsTh(body, withKap) {
   let seg;
-  if (/[：:]/.test(body)) {
-    seg = body.slice(body.search(/[：:]/) + 1);
+  if (/[：:；;]/.test(body)) {
+    seg = body.slice(body.search(/[：:；;]/) + 1);
   } else if (body.includes("ระหว่าง")) {
     seg = body.slice(body.indexOf("ระหว่าง") + "ระหว่าง".length);
     withKap = true;

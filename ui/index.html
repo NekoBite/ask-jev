@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ask JEV</title>
+<title>Ask TypeSafe Jev</title>
 <style>
   :root {
     color-scheme: light;
@@ -51,7 +51,7 @@
   body {
     background: var(--surface);
     color: var(--text);
-    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, system-ui, sans-serif;
+    font: 15px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, system-ui, "PingFang SC", "PingFang TC", "Noto Sans CJK SC", "Noto Sans Thai", Thonburi, sans-serif;
     -webkit-font-smoothing: antialiased;
     padding: 0 16px 48px;
   }
@@ -59,11 +59,16 @@
     max-width: 1120px; margin: 0 auto; padding: 22px 0 14px;
     display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   }
-  header > div:not(.logo):not(.status) { flex: 1 1 200px; min-width: 0; }
+  header > div:not(.logo):not(.status):not(.lang) { flex: 1 1 200px; min-width: 0; }
   .logo { flex: none; width: 30px; height: 30px; border-radius: 9px; background: var(--accent); display: grid; place-items: center; color: var(--accent-ink); font-weight: 700; font-size: 14px; letter-spacing: .02em; }
   header h1 { font-size: 19px; font-weight: 650; margin: 0; letter-spacing: -.01em; }
   header .sub { color: var(--text-2); font-size: 13.5px; }
-  header .status { margin-left: auto; font-size: 12.5px; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
+  .lang { display: inline-flex; border: 1px solid var(--border); border-radius: 9px; overflow: hidden; background: var(--card); }
+  .lang button { all: unset; cursor: pointer; font-size: 12.5px; font-weight: 600; padding: 6px 10px; color: var(--text-2); }
+  .lang button + button { border-left: 1px solid var(--border); }
+  .lang button:hover { color: var(--text); }
+  .lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+  header .status { font-size: 12.5px; color: var(--text-2); display: flex; align-items: center; gap: 6px; }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); }
   .dot.ok { background: var(--good); }
   .dot.busy { background: var(--accent); animation: pulse 1s infinite alternate; }
@@ -159,8 +164,14 @@
 <header>
   <div class="logo">J</div>
   <div>
-    <h1>Ask JEV</h1>
-    <div class="sub">Yes/no, pick one, or how much — a calibrated answer, no prose.</div>
+    <h1 data-i18n="title">Ask TypeSafe Jev</h1>
+    <div class="sub" data-i18n="subtitle">Yes/no, pick one, or how much — a calibrated answer, no prose.</div>
+  </div>
+  <div class="lang" role="group" aria-label="Language" id="lang">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="zh-Hans">简体</button>
+    <button type="button" data-lang="zh-Hant">繁體</button>
+    <button type="button" data-lang="th">ไทย</button>
   </div>
   <div class="status"><span class="dot" id="dot"></span><span id="statusText">ready</span></div>
 </header>
@@ -169,47 +180,47 @@
   <section>
     <form class="card stack" id="form" autocomplete="off">
       <div>
-        <label class="field" for="question">Question <span class="hint">— one per line to ask several at once · English, 中文, ไทย</span></label>
-        <textarea id="question" placeholder="Should I take the job offer?&#10;网站该用 Astro、Next.js 还是纯 HTML？&#10;การเปิดตัวก่อนที่เทสต์จะผ่านเสี่ยงแค่ไหน"></textarea>
-        <div class="preview" id="preview">Type a question — JEV answers <b>Should… / Is…</b>, <b>A, B, or C?</b> and <b>How risky/likely/hard…</b> shapes, in English, 中文 or ไทย.</div>
+        <label class="field" for="question"><span data-i18n="qLabel">Question</span> <span class="hint" data-i18n="qHint">— one per line to ask several at once</span></label>
+        <textarea id="question" data-i18n-ph="qPlaceholder"></textarea>
+        <div class="preview" id="preview"></div>
       </div>
       <div>
-        <label class="field" for="context">Context <span class="hint">— JEV sees only this, nothing else</span></label>
-        <textarea id="context" placeholder="The facts that matter: who, what, constraints, deadlines, what has already been tried…"></textarea>
+        <label class="field" for="context"><span data-i18n="ctxLabel">Context</span> <span class="hint" data-i18n="ctxHint">— Jev sees only this, nothing else</span></label>
+        <textarea id="context" data-i18n-ph="ctxPlaceholder"></textarea>
       </div>
       <div class="row">
         <div>
-          <label class="field" for="contextFile">Also include a saved decision spec</label>
-          <select id="contextFile"><option value="">none</option></select>
+          <label class="field" for="contextFile" data-i18n="specLabel">Also include a saved decision spec</label>
+          <select id="contextFile"><option value="" data-i18n="none">none</option></select>
         </div>
       </div>
       <details>
-        <summary>Advanced — force the shape, name the options or levels</summary>
+        <summary data-i18n="advanced">Advanced — force the shape, name the options or levels</summary>
         <div class="stack">
           <div class="row">
             <div>
-              <label class="field" for="options">Options <span class="hint">comma-separated → pick one</span></label>
-              <input type="text" id="options" placeholder="email, linkedin, cold call">
+              <label class="field" for="options"><span data-i18n="optLabel">Options</span> <span class="hint" data-i18n="optHint">comma-separated → pick one</span></label>
+              <input type="text" id="options" data-i18n-ph="optPlaceholder">
             </div>
             <div>
-              <label class="field" for="levels">Levels <span class="hint">2–10, low → high, describe situations</span></label>
-              <input type="text" id="levels" placeholder="Not started, Prototype, Works but rough, Polished, Shipped">
+              <label class="field" for="levels"><span data-i18n="lvlLabel">Levels</span> <span class="hint" data-i18n="lvlHint">2–10, low → high, describe situations</span></label>
+              <input type="text" id="levels" data-i18n-ph="lvlPlaceholder">
             </div>
             <div style="flex: 0 1 160px">
-              <label class="field" for="type">Shape</label>
+              <label class="field" for="type" data-i18n="shapeLabel">Shape</label>
               <select id="type">
-                <option value="">auto-detect</option>
-                <option value="noul">yes/no</option>
-                <option value="choice">pick one</option>
-                <option value="score">how much</option>
+                <option value="" data-i18n="auto">auto-detect</option>
+                <option value="noul" data-i18n="shape.noul">yes/no</option>
+                <option value="choice" data-i18n="shape.choice">pick one</option>
+                <option value="score" data-i18n="shape.score">how much</option>
               </select>
             </div>
           </div>
         </div>
       </details>
       <div class="actions">
-        <button class="primary" id="ask" type="submit">Ask JEV <kbd>⌘↩</kbd></button>
-        <button class="ghost" id="clear" type="button">Clear</button>
+        <button class="primary" id="ask" type="submit"><span data-i18n="ask">Ask TypeSafe Jev</span> <kbd>⌘↩</kbd></button>
+        <button class="ghost" id="clear" type="button" data-i18n="clear">Clear</button>
         <span class="meta" id="usage"></span>
       </div>
     </form>
@@ -219,13 +230,9 @@
   </section>
 
   <aside>
-    <div class="notice" id="notice" hidden>
-      <b>Public demo.</b> Answers come from TypeSafe's <code>jev-latest</code> on the owner's key, so it is rate-limited
-      (a few asks per minute per visitor). Your questions are not stored on the server; the Recent list lives in this browser only.
-      Source: <a href="https://github.com/NekoBite/ask-jev">github.com/NekoBite/ask-jev</a>.
-    </div>
-    <h2>Recent</h2>
-    <div class="hist" id="history"><div class="empty">Nothing asked yet.</div></div>
+    <div class="notice" id="notice" hidden></div>
+    <h2 data-i18n="recent">Recent</h2>
+    <div class="hist" id="history"></div>
   </aside>
 </main>
 
@@ -234,12 +241,143 @@
   const $ = (id) => document.getElementById(id);
   const els = { q: $('question'), ctx: $('context'), file: $('contextFile'), opt: $('options'), lvl: $('levels'),
                 type: $('type'), ask: $('ask'), clear: $('clear'), preview: $('preview'), results: $('results'),
-                error: $('error'), history: $('history'), dot: $('dot'), status: $('statusText'), usage: $('usage') };
+                error: $('error'), history: $('history'), dot: $('dot'), status: $('statusText'), usage: $('usage'),
+                notice: $('notice'), lang: $('lang') };
 
   const YES = 0.7, NO = 0.3, CLOSE = 0.5;   // same reading thresholds as ask_jev.py
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const f2 = (x) => Number(x).toFixed(2);
+  const SOURCE = '<a href="https://github.com/NekoBite/ask-jev">github.com/NekoBite/ask-jev</a>';
 
+  // ---- languages -------------------------------------------------------------
+  const STRINGS = {
+    en: {
+      locale: 'en', title: 'Ask TypeSafe Jev',
+      subtitle: 'Yes/no, pick one, or how much — a calibrated answer, no prose.',
+      ready: 'ready', asking: 'asking Jev…', error: 'error',
+      qLabel: 'Question', qHint: '— one per line to ask several at once',
+      qPlaceholder: 'Should I pay for the token?\nWhich type of tea is better: black tea, oolong tea, or green tea?\nHow risky is shipping to production without testing?',
+      previewDefault: 'Type a question — Jev answers <b>Should… / Is…</b>, <b>A, B, or C?</b> and <b>How risky/likely/hard…</b> shapes.',
+      ctxLabel: 'Context', ctxHint: '— Jev sees only this, nothing else',
+      ctxPlaceholder: 'The facts that matter: who, what, constraints, deadlines, what has already been tried…',
+      specLabel: 'Also include a saved decision spec', none: 'none',
+      advanced: 'Advanced — force the shape, name the options or levels',
+      optLabel: 'Options', optHint: 'comma-separated → pick one', optPlaceholder: 'email, linkedin, cold call',
+      lvlLabel: 'Levels', lvlHint: '2–10, low → high, describe situations', lvlPlaceholder: 'Not started, Prototype, Works but rough, Polished, Shipped',
+      shapeLabel: 'Shape', auto: 'auto-detect',
+      'shape.noul': 'yes/no', 'shape.choice': 'pick one', 'shape.score': 'how much',
+      ask: 'Ask TypeSafe Jev', clear: 'Clear',
+      levelsN: (n, a, b) => `${n} levels: ${a} → ${b}`,
+      pYes: 'probability that the answer is yes', yes: 'YES', no: 'NO', unsure: 'UNSURE',
+      meterNo: '0 · no', meterYes: 'yes · 1', confidence: 'confidence', closeCall: 'close call',
+      copy: 'Copy for Claude', copied: 'Copied', copyFail: 'Select the text above',
+      recent: 'Recent', empty: 'Nothing asked yet.',
+      notice: `<b>Public demo.</b> Answers come from TypeSafe's <code>jev-latest</code> on the owner's key, so it is rate-limited (a few asks per minute per visitor). Your questions are not stored on the server; the Recent list lives in this browser only. Source: ${SOURCE}.`,
+    },
+    'zh-Hans': {
+      locale: 'zh-CN', title: '问 TypeSafe Jev',
+      subtitle: '是非题、选择题或程度题——给你一个经过校准的答案，不写长篇大论。',
+      ready: '就绪', asking: '正在询问 Jev…', error: '出错',
+      qLabel: '问题', qHint: '— 每行一个问题，可同时问多个',
+      qPlaceholder: '我应该为这个代币付费吗？\n哪种茶更好：红茶、乌龙茶还是绿茶？\n不测试就直接上线生产环境有多大风险？',
+      previewDefault: '输入一个问题——Jev 能回答 <b>……吗？</b>、<b>A、B 还是 C？</b> 和 <b>……有多大风险/多难？</b> 这三种形式。',
+      ctxLabel: '背景信息', ctxHint: '— Jev 只能看到这里的内容',
+      ctxPlaceholder: '相关事实：谁、什么、限制条件、截止时间、已经尝试过什么……',
+      specLabel: '同时附上已保存的决策说明', none: '无',
+      advanced: '高级 — 指定问题形式、列出选项或等级',
+      optLabel: '选项', optHint: '用逗号分隔 → 选择题', optPlaceholder: '邮件, LinkedIn, 电话',
+      lvlLabel: '等级', lvlHint: '2–10 个，从低到高，描述具体情形', lvlPlaceholder: '尚未开始, 原型, 能用但粗糙, 打磨完成, 已上线',
+      shapeLabel: '形式', auto: '自动识别',
+      'shape.noul': '是非', 'shape.choice': '选择', 'shape.score': '程度',
+      ask: '问 TypeSafe Jev', clear: '清空',
+      levelsN: (n, a, b) => `${n} 个等级：${a} → ${b}`,
+      pYes: '答案为“是”的概率', yes: '是', no: '否', unsure: '不确定',
+      meterNo: '0 · 否', meterYes: '是 · 1', confidence: '置信度', closeCall: '势均力敌',
+      copy: '复制给 Claude', copied: '已复制', copyFail: '请手动选择上方文本',
+      recent: '最近', empty: '还没有提问。',
+      notice: `<b>公开演示。</b>答案来自 TypeSafe 的 <code>jev-latest</code> 模型，使用站长的密钥，因此有频率限制（每位访客每分钟几次）。你的问题不会保存在服务器上；“最近”列表只存在于当前浏览器。源码：${SOURCE}。`,
+    },
+    'zh-Hant': {
+      locale: 'zh-TW', title: '問 TypeSafe Jev',
+      subtitle: '是非題、選擇題或程度題——給你一個經過校準的答案，不寫長篇大論。',
+      ready: '就緒', asking: '正在詢問 Jev…', error: '出錯',
+      qLabel: '問題', qHint: '— 每行一個問題，可同時問多個',
+      qPlaceholder: '我應該為這個代幣付費嗎？\n哪種茶更好：紅茶、烏龍茶還是綠茶？\n不測試就直接上線生產環境有多大風險？',
+      previewDefault: '輸入一個問題——Jev 能回答 <b>……嗎？</b>、<b>A、B 還是 C？</b> 和 <b>……有多大風險/多難？</b> 這三種形式。',
+      ctxLabel: '背景資訊', ctxHint: '— Jev 只能看到這裡的內容',
+      ctxPlaceholder: '相關事實：誰、什麼、限制條件、截止時間、已經嘗試過什麼……',
+      specLabel: '同時附上已儲存的決策說明', none: '無',
+      advanced: '進階 — 指定問題形式、列出選項或等級',
+      optLabel: '選項', optHint: '用逗號分隔 → 選擇題', optPlaceholder: '郵件, LinkedIn, 電話',
+      lvlLabel: '等級', lvlHint: '2–10 個，從低到高，描述具體情形', lvlPlaceholder: '尚未開始, 原型, 能用但粗糙, 打磨完成, 已上線',
+      shapeLabel: '形式', auto: '自動識別',
+      'shape.noul': '是非', 'shape.choice': '選擇', 'shape.score': '程度',
+      ask: '問 TypeSafe Jev', clear: '清空',
+      levelsN: (n, a, b) => `${n} 個等級：${a} → ${b}`,
+      pYes: '答案為「是」的機率', yes: '是', no: '否', unsure: '不確定',
+      meterNo: '0 · 否', meterYes: '是 · 1', confidence: '信賴度', closeCall: '勢均力敵',
+      copy: '複製給 Claude', copied: '已複製', copyFail: '請手動選取上方文字',
+      recent: '最近', empty: '還沒有提問。',
+      notice: `<b>公開展示。</b>答案來自 TypeSafe 的 <code>jev-latest</code> 模型，使用站長的金鑰，因此有頻率限制（每位訪客每分鐘幾次）。你的問題不會保存在伺服器上；「最近」列表只存在於目前的瀏覽器。原始碼：${SOURCE}。`,
+    },
+    th: {
+      locale: 'th-TH', title: 'ถาม TypeSafe Jev',
+      subtitle: 'ใช่/ไม่ เลือกหนึ่ง หรือมากน้อยแค่ไหน — คำตอบที่ผ่านการปรับเทียบแล้ว ไม่มีคำอธิบายยืดยาว',
+      ready: 'พร้อม', asking: 'กำลังถาม Jev…', error: 'เกิดข้อผิดพลาด',
+      qLabel: 'คำถาม', qHint: '— บรรทัดละหนึ่งคำถาม ถามหลายข้อพร้อมกันได้',
+      qPlaceholder: 'ควรจ่ายเงินซื้อโทเคนนี้ไหม\nชาแบบไหนดีกว่ากัน: ชาดำ, ชาอู่หลง หรือ ชาเขียว\nการขึ้นโปรดักชันโดยไม่ทดสอบเสี่ยงแค่ไหน',
+      previewDefault: 'พิมพ์คำถาม — Jev ตอบได้สามแบบ: <b>…ไหม</b>, <b>A หรือ B</b> และ <b>…เสี่ยง/ยากแค่ไหน</b>',
+      ctxLabel: 'บริบท', ctxHint: '— Jev เห็นเฉพาะข้อมูลตรงนี้เท่านั้น',
+      ctxPlaceholder: 'ข้อเท็จจริงที่สำคัญ: ใคร อะไร ข้อจำกัด กำหนดเวลา เคยลองอะไรมาแล้วบ้าง…',
+      specLabel: 'แนบสเปกการตัดสินใจที่บันทึกไว้ด้วย', none: 'ไม่มี',
+      advanced: 'ขั้นสูง — กำหนดรูปแบบคำถาม ระบุตัวเลือกหรือระดับ',
+      optLabel: 'ตัวเลือก', optHint: 'คั่นด้วยจุลภาค → เลือกหนึ่ง', optPlaceholder: 'อีเมล, LinkedIn, โทรหา',
+      lvlLabel: 'ระดับ', lvlHint: '2–10 ระดับ จากน้อยไปมาก บรรยายเป็นสถานการณ์', lvlPlaceholder: 'ยังไม่เริ่ม, ต้นแบบ, ใช้ได้แต่ยังหยาบ, ขัดเกลาแล้ว, ปล่อยแล้ว',
+      shapeLabel: 'รูปแบบ', auto: 'ตรวจจับอัตโนมัติ',
+      'shape.noul': 'ใช่/ไม่', 'shape.choice': 'เลือกหนึ่ง', 'shape.score': 'มากน้อย',
+      ask: 'ถาม TypeSafe Jev', clear: 'ล้าง',
+      levelsN: (n, a, b) => `${n} ระดับ: ${a} → ${b}`,
+      pYes: 'ความน่าจะเป็นที่คำตอบคือ “ใช่”', yes: 'ใช่', no: 'ไม่', unsure: 'ไม่แน่ใจ',
+      meterNo: '0 · ไม่', meterYes: 'ใช่ · 1', confidence: 'ความมั่นใจ', closeCall: 'สูสี',
+      copy: 'คัดลอกให้ Claude', copied: 'คัดลอกแล้ว', copyFail: 'เลือกข้อความด้านบนด้วยตนเอง',
+      recent: 'ล่าสุด', empty: 'ยังไม่มีคำถาม',
+      notice: `<b>เดโมสาธารณะ</b> คำตอบมาจากโมเดล <code>jev-latest</code> ของ TypeSafe ผ่านคีย์ของเจ้าของเว็บ จึงจำกัดจำนวนครั้ง (ไม่กี่ครั้งต่อนาทีต่อผู้ใช้) คำถามของคุณไม่ถูกเก็บบนเซิร์ฟเวอร์ รายการ “ล่าสุด” อยู่ในเบราว์เซอร์นี้เท่านั้น ซอร์สโค้ด: ${SOURCE}`,
+    },
+  };
+  let lang = 'en', T = STRINGS.en, lastOut = null, isPublic = false;
+
+  function detectLang() {
+    try { const saved = localStorage.getItem('askjev.lang'); if (STRINGS[saved]) return saved; } catch {}
+    const nav = (navigator.language || 'en').toLowerCase();
+    if (nav.startsWith('zh')) return /tw|hk|mo|hant/.test(nav) ? 'zh-Hant' : 'zh-Hans';
+    if (nav.startsWith('th')) return 'th';
+    return 'en';
+  }
+
+  function setLang(next) {
+    lang = STRINGS[next] ? next : 'en'; T = STRINGS[lang];
+    try { localStorage.setItem('askjev.lang', lang); } catch {}
+    document.documentElement.lang = lang;
+    document.title = T.title;
+    for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = T[el.dataset.i18n];
+    for (const el of document.querySelectorAll('[data-i18n-ph]')) el.placeholder = T[el.dataset.i18nPh];
+    for (const b of els.lang.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
+    els.notice.innerHTML = T.notice; els.notice.hidden = !isPublic;
+    if (!els.ask.disabled) setStatus(lastOut ? lastOut.model : T.ready, 'ok');
+    schedulePreview();
+    if (lastOut) renderAll(lastOut);
+    loadHistory();
+  }
+
+  // Shape notes come from the server in English ("how much (default levels…) · th"); show them in the page language.
+  function shapeLabel(note) {
+    const base = note.split(' (')[0].split(' · ')[0];
+    const key = { 'yes/no': 'noul', 'pick one': 'choice', 'how much': 'score', 'choice': 'choice', 'score': 'score' }[base] || 'noul';
+    const tag = (note.match(/ · ([\w-]+)$/) || [])[1];
+    return T['shape.' + key] + (tag ? ' · ' + tag : '');
+  }
+
+  // ---- plumbing -----------------------------------------------------------------
   function body() {
     return {
       questions: els.q.value.split('\n').map((s) => s.trim()).filter(Boolean),
@@ -260,53 +398,55 @@
     return data;
   }
 
-  // ---- live preview of how each line will be asked -------------------------
+  // ---- live preview of how each line will be asked ----------------------------
   let previewTimer;
   function schedulePreview() { clearTimeout(previewTimer); previewTimer = setTimeout(preview, 350); }
   async function preview() {
     const b = body();
-    if (!b.questions.length) { els.preview.innerHTML = 'Type a question — JEV answers <b>Should… / Is…</b>, <b>A, B, or C?</b> and <b>How risky/likely/hard…</b> shapes, in English, 中文 or ไทย.'; return; }
+    if (!b.questions.length) { els.preview.innerHTML = T.previewDefault; return; }
     try {
       const { request } = await api('/api/preview', b);
       els.preview.innerHTML = Object.values(request.questions).map((tq, i) => {
-        const kind = { noul: 'yes/no', choice: 'pick one', score: 'how much' }[tq.type];
         let extra = '';
         if (tq.type === 'choice') extra = Object.keys(tq.criteria).join(' · ');
-        if (tq.type === 'score') extra = tq.criteria.length + ' levels: ' + tq.criteria[0] + ' → ' + tq.criteria[tq.criteria.length - 1];
-        return `<div><span class="tag">${kind}</span>${b.questions.length > 1 ? `<b>Q${i + 1}</b> ` : ''}${esc(extra)}</div>`;
+        if (tq.type === 'score') extra = T.levelsN(tq.criteria.length, tq.criteria[0], tq.criteria[tq.criteria.length - 1]);
+        return `<div><span class="tag">${esc(T['shape.' + tq.type])}</span>${b.questions.length > 1 ? `<b>Q${i + 1}</b> ` : ''}${esc(extra)}</div>`;
       }).join('');
     } catch (e) {
       els.preview.innerHTML = `<div class="err">${esc(e.message)}</div>`;
     }
   }
 
-  // ---- rendering an answer -------------------------------------------------
-  function cliLine(r) {
+  // ---- rendering an answer -------------------------------------------------------
+  function cliLine(r) {   // stays English: it is the line the /jev skill and Claude read
     return `JEV: ${r.verdict}   <- "${r.question}"  [${r.shape}]` + (r.detail ? `\n     ${r.detail}` : '');
   }
 
   function renderNoul(r) {
     const p = r.answer.noul;
-    const v = p >= YES ? ['yes', '✓', 'YES'] : p <= NO ? ['no', '✕', 'NO'] : ['unsure', '?', 'UNSURE'];
+    const v = p >= YES ? ['yes', '✓', T.yes] : p <= NO ? ['no', '✕', T.no] : ['unsure', '?', T.unsure];
     return `
       <div class="verdict"><div class="hero">${f2(p)}</div>
-        <span class="chip ${v[0]}"><span class="ic">${v[1]}</span>${v[2]}</span>
-        <span class="meta">probability that the answer is yes</span></div>
+        <span class="chip ${v[0]}"><span class="ic">${v[1]}</span>${esc(v[2])}</span>
+        <span class="meta">${esc(T.pYes)}</span></div>
       <div>
         <div class="meter"><div class="fill" style="width:${(p * 100).toFixed(1)}%"></div>
           <div class="tick" style="left:${NO * 100}%"></div><div class="tick" style="left:${YES * 100}%"></div></div>
-        <div class="meter-labels"><span>0 · no</span><span>0.30</span><span>0.70</span><span>yes · 1</span></div>
+        <div class="meter-labels"><span>${esc(T.meterNo)}</span><span>0.30</span><span>0.70</span><span>${esc(T.meterYes)}</span></div>
       </div>`;
+  }
+
+  function confidenceChip(conf) {
+    const close = conf < CLOSE;
+    return `<span class="chip ${close ? 'unsure' : ''}">${close ? `<span class="ic">?</span>${esc(T.closeCall)} · ` : ''}${esc(T.confidence)} ${f2(conf)}</span>`;
   }
 
   function renderChoice(r) {
     const a = r.answer;
     const rows = Object.entries(a.probabilities).sort((x, y) => y[1] - x[1]);
-    const close = a.confidence < CLOSE;
     return `
       <div class="verdict"><div class="hero word">${esc(a.choice)}</div>
-        <span class="chip">p ${f2(a.probabilities[a.choice])}</span>
-        <span class="chip ${close ? 'unsure' : ''}">${close ? '<span class="ic">?</span>close call · ' : ''}confidence ${f2(a.confidence)}</span></div>
+        <span class="chip">p ${f2(a.probabilities[a.choice])}</span>${confidenceChip(a.confidence)}</div>
       <div class="bars">${rows.map(([k, p]) => `
         <div class="bar ${k === a.choice ? 'win' : ''}">
           <div class="lab ${k === a.choice ? 'win' : ''}"><span>${esc(k)}</span></div>
@@ -319,13 +459,11 @@
     const a = r.answer;
     const top = Object.keys(a.legend).length - 1;
     const nearest = String(Math.round(a.score));
-    const close = a.confidence < CLOSE;
     return `
       <div class="verdict"><div class="hero">${f2(a.score)}<span style="font-size:20px;color:var(--text-3);font-weight:500"> / ${top}</span></div>
-        <span class="chip">≈ ${esc(a.legend[nearest])}</span>
-        <span class="chip ${close ? 'unsure' : ''}">${close ? '<span class="ic">?</span>close call · ' : ''}confidence ${f2(a.confidence)}</span></div>
+        <span class="chip">≈ ${esc(a.legend[nearest])}</span>${confidenceChip(a.confidence)}</div>
       <div>
-        <div class="meter" style="background:var(--track)"><div class="marker" style="left:${(a.score / top * 100).toFixed(1)}%"></div></div>
+        <div class="meter"><div class="marker" style="left:${(a.score / top * 100).toFixed(1)}%"></div></div>
         <div class="meter-labels"><span>0 · ${esc(a.legend['0'])}</span><span>${top} · ${esc(a.legend[String(top)])}</span></div>
       </div>
       <div class="bars">${Object.keys(a.legend).map((i) => `
@@ -344,16 +482,17 @@
     card.innerHTML = `
       <div class="q">${out.results.length > 1 ? `<b>Q${i + 1}</b> · ` : ''}<b>${esc(r.question)}</b></div>
       ${inner}
-      <div class="copybox"><code>${esc(line)}</code><button class="ghost" type="button">Copy for Claude</button></div>
-      <div class="meta"><span>${esc(r.shape)}</span><span>${esc(out.model)}</span></div>`;
+      <div class="copybox"><code>${esc(line)}</code><button class="ghost" type="button">${esc(T.copy)}</button></div>
+      <div class="meta"><span>${esc(shapeLabel(r.shape))}</span><span>${esc(out.model)}</span></div>`;
     card.querySelector('button').addEventListener('click', async (ev) => {
-      try { await navigator.clipboard.writeText(line); ev.target.textContent = 'Copied'; setTimeout(() => (ev.target.textContent = 'Copy for Claude'), 1400); }
-      catch { ev.target.textContent = 'Select the text above'; }
+      try { await navigator.clipboard.writeText(line); ev.target.textContent = T.copied; setTimeout(() => (ev.target.textContent = T.copy), 1400); }
+      catch { ev.target.textContent = T.copyFail; }
     });
     return card;
   }
+  function renderAll(out) { els.results.replaceChildren(...out.results.map((r, i) => renderResult(out, r, i))); }
 
-  // ---- history -------------------------------------------------------------
+  // ---- history ---------------------------------------------------------------------
   const LOCAL_HIST = 'askjev.hist';
   function localHistory() { try { return JSON.parse(localStorage.getItem(LOCAL_HIST) || '[]'); } catch { return []; } }
   function rememberLocally(out) {
@@ -363,23 +502,29 @@
     } catch {}
   }
 
+  function shortVerdict(row) {
+    const a = row.answer || {};
+    if (a.type === 'noul') return a.noul >= YES ? T.yes : a.noul <= NO ? T.no : T.unsure;
+    if (a.type === 'score') return `${f2(a.score)} / ${Object.keys(a.legend).length - 1} ≈ ${a.legend[String(Math.round(a.score))]}`;
+    return row.verdict.split(' (')[0];
+  }
+
   async function loadHistory() {
     try {
       let rows = await api('/api/history?n=40');
       if (!Array.isArray(rows)) {            // server keeps no log (public deployment): use this browser's list
-        $('notice').hidden = !rows.public;
+        isPublic = !!rows.public; els.notice.hidden = !isPublic;
         rows = localHistory();
       }
-      if (!rows.length) { els.history.innerHTML = '<div class="empty">Nothing asked yet.</div>'; return; }
+      if (!rows.length) { els.history.innerHTML = `<div class="empty">${esc(T.empty)}</div>`; return; }
       els.history.innerHTML = '';
       for (const row of rows) {
         const b = document.createElement('button');
         b.type = 'button';
-        const when = new Date(row.ts);
-        const a = row.answer || {};
-        const v = a.type === 'score' ? `${f2(a.score)} / ${Object.keys(a.legend).length - 1} ≈ ${a.legend[String(Math.round(a.score))]}` : row.verdict.split(' (')[0];
+        const when = new Date(row.ts).toLocaleString(T.locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const v = shortVerdict(row);
         b.innerHTML = `<div class="v" title="${esc(v)}">${esc(v)}</div><div class="t" title="${esc(row.question)}">${esc(row.question)}</div>
-                       <div class="d">${when.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} · ${esc(row.shape.split(' (')[0])}</div>`;
+                       <div class="d">${esc(when)} · ${esc(shapeLabel(row.shape))}</div>`;
         b.addEventListener('click', () => {
           els.q.value = row.question;
           const st = row.state || {};
@@ -391,38 +536,38 @@
     } catch (e) { els.history.innerHTML = `<div class="empty">${esc(e.message)}</div>`; }
   }
 
-  // ---- ask -----------------------------------------------------------------
+  // ---- ask ---------------------------------------------------------------------------
   async function ask(ev) {
     ev && ev.preventDefault();
     const b = body();
     if (!b.questions.length) { els.q.focus(); return; }
     showError('');
-    els.ask.disabled = true; setStatus('asking JEV…', 'busy');
+    els.ask.disabled = true; setStatus(T.asking, 'busy');
     const t0 = performance.now();
     try {
       const out = await api('/api/ask', b);
-      els.results.replaceChildren(...out.results.map((r, i) => renderResult(out, r, i)));
+      lastOut = out; renderAll(out);
       els.usage.textContent = `${out.usage.input_tokens} in / ${out.usage.output_tokens} out · ${((performance.now() - t0) / 1000).toFixed(1)}s`;
       setStatus(out.model, 'ok');
       try { localStorage.setItem('askjev.last', JSON.stringify({ q: b.questions.join('\n'), ctx: b.context })); } catch {}
       rememberLocally(out);
       loadHistory();
     } catch (e) {
-      showError(e.message); setStatus('error', '');
+      showError(e.message); setStatus(T.error, '');
     } finally { els.ask.disabled = false; }
   }
 
-  // ---- wiring --------------------------------------------------------------
+  // ---- wiring ------------------------------------------------------------------------
   $('form').addEventListener('submit', ask);
   document.addEventListener('keydown', (e) => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') ask(e); });
   for (const el of [els.q, els.opt, els.lvl, els.type]) el.addEventListener('input', schedulePreview);
-  els.clear.addEventListener('click', () => { els.q.value = ''; els.ctx.value = ''; els.opt.value = ''; els.lvl.value = ''; els.type.value = ''; els.file.value = ''; els.results.replaceChildren(); showError(''); els.usage.textContent = ''; schedulePreview(); els.q.focus(); });
+  els.clear.addEventListener('click', () => { els.q.value = ''; els.ctx.value = ''; els.opt.value = ''; els.lvl.value = ''; els.type.value = ''; els.file.value = ''; els.results.replaceChildren(); lastOut = null; showError(''); els.usage.textContent = ''; schedulePreview(); els.q.focus(); });
+  els.lang.addEventListener('click', (e) => { const b = e.target.closest('button[data-lang]'); if (b) setLang(b.dataset.lang); });
 
   (async () => {
     try { const files = await api('/api/contexts'); if (!files.length) els.file.closest('.row').hidden = true; for (const f of files) { const o = document.createElement('option'); o.value = f; o.textContent = 'decisions/' + f; els.file.appendChild(o); } } catch {}
-    try { const last = JSON.parse(localStorage.getItem('askjev.last') || 'null'); if (last) { els.q.value = last.q || ''; els.ctx.value = last.ctx || ''; schedulePreview(); } } catch {}
-    loadHistory();
-    setStatus('ready', 'ok');
+    try { const last = JSON.parse(localStorage.getItem('askjev.last') || 'null'); if (last) { els.q.value = last.q || ''; els.ctx.value = last.ctx || ''; } } catch {}
+    setLang(detectLang());
   })();
 })();
 </script>

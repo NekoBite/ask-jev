@@ -1,4 +1,4 @@
-# Ask JEV — TypeSafe's Jev as a judgment engine
+# Ask TypeSafe Jev — a plain-English (or 中文 / ไทย) question, a calibrated typed answer
 
 **Try it: https://jev.ask-jev.workers.dev** — a plain-English question in, a calibrated
 typed answer out, in about a second. No signup; it runs on the owner's TypeSafe key and is
@@ -29,7 +29,7 @@ levels. Anything else (`Why…`, `What should the copy say…`) is rejected with
 does not generate text. Jev sees only what you pass in `--context` / `--context-file` / stdin.
 Every call is appended to `runs/ask_log.jsonl`.
 
-**Web UI:** double-click `Ask JEV.command` (or `python3 jev_ui.py`) — opens http://127.0.0.1:8765
+**Web UI:** double-click `Ask TypeSafe Jev.command` (or `python3 jev_ui.py`) — opens http://127.0.0.1:8765
 with a question box, context box, live shape preview, probability bars, a "Copy for Claude"
 line per answer, and your recent history. The key stays on your machine: the page talks to
 `jev_ui.py`, which calls TypeSafe.
@@ -48,7 +48,9 @@ Score levels come back in the asker's language from [`levels.json`](levels.json)
 trained primarily on English; TypeSafe says other languages, including CJK scripts, are
 accepted with lower accuracy. In our checks Chinese answers tracked the English ones
 closely and Thai was a little noisier, so read UNSURE and "close call" with that in mind.
-Context can be in any of these languages too.
+Context can be in any of these languages too. The page itself is translated (EN / 简体 / 繁體 / ไทย,
+switch in the header; it follows your browser language by default), with suggested questions in
+each language.
 
 ## Deploying your own public copy (Cloudflare Worker)
 

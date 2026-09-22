@@ -127,7 +127,7 @@ def main() -> None:
 
     server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
     url = f"http://127.0.0.1:{args.port}/"
-    print(f"Ask JEV UI at {url}   (Ctrl-C to stop)")
+    print(f"Ask TypeSafe Jev UI at {url}   (Ctrl-C to stop)")
     if not args.no_browser:
         threading.Timer(0.4, webbrowser.open, [url]).start()
     try:

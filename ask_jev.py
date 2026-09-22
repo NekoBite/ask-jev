@@ -96,8 +96,8 @@ LEVELS = json.loads((HERE / "levels.json").read_text())
 CJK_RE = re.compile(r"[一-鿿㐀-䶿]")
 THAI_RE = re.compile(r"[฀-๿]")
 # Characters that differ between the two scripts; whichever set a question uses more wins.
-TRAD_CHARS = set("們這個說為會應該嗎還選風險難緊價麼於與國時經學問題發現務來對開關點動長車電馬鳥東門買賣讓認識語頁網後")
-SIMP_CHARS = set("们这个说为会应该吗还选风险难紧价么于与国时经学问题发现务来对开关点动长车电马鸟东门买卖让认识语页网后")
+TRAD_CHARS = set("們這個說為會應該嗎還選風險難緊價麼於與國時經學問題發現務來對開關點動長車電馬鳥東門買賣讓認識語頁網後種線產測環紅綠烏龍幣費設計態導過進遠運連業專傳轉華達體臺灣廣場際標準積極權觀歡圖書數樓機檢驗資質貴賺錢銀鐵錯鍵願顯頭類實寫將尋層屬島師帶幫廠復從愛戰擇護擴斷舊曆條樣歷氣決況淨濟無熱營獨獲畫當療蓋處號術裝見規視覺許話誰課調談請論講謝證議讀變負財貨責賽軟較輕輸農遊適郵鄉醫釋裡間閱陽隨雙雜離靈領額顧飛飯館髮鬥魚麗齊齒龜兩親")
+SIMP_CHARS = set("们这个说为会应该吗还选风险难紧价么于与国时经学问题发现务来对开关点动长车电马鸟东门买卖让认识语页网后种线产测环红绿乌龙币费设计态导过进远运连业专传转华达体台湾广场际标准积极权观欢图书数楼机检验资质贵赚钱银铁错键愿显头类实写将寻层属岛师带帮厂复从爱战择护扩断旧历条样历气决况净济无热营独获画当疗盖处号术装见规视觉许话谁课调谈请论讲谢证议读变负财货责赛软较轻输农游适邮乡医释里间阅阳随双杂离灵领额顾飞饭馆发斗鱼丽齐齿龟两亲")
 
 
 def detect_lang(q: str) -> str:
@@ -171,8 +171,8 @@ def split_options_en(question: str) -> list[str]:
     if not OR_RE.search(body) and "," not in body:
         return []
 
-    if ":" in body:
-        seg = body.split(":", 1)[1]
+    if ":" in body or ";" in body:
+        seg = re.split(r"[:;]", body, 1)[1]
     elif m := re.search(r"\b(?:between|among|out of)\s+(.+)$", body, re.I):
         seg = m.group(1)
     elif WHICH_RE.match(body) and "," in body:
@@ -241,8 +241,8 @@ ZH_LEVEL_KEYS = [
 
 def split_options_zh(body: str) -> list[str]:
     body = ZH_OPTION_TAIL.sub("", body.strip(ZH_PUNCT)).strip(ZH_PUNCT)
-    if "：" in body or ":" in body:
-        seg = re.split(r"[：:]", body, 1)[1]
+    if re.search(r"[：:；;]", body):
+        seg = re.split(r"[：:；;]", body, 1)[1]
     else:
         seg = body
         first_sep = ZH_CHOICE_SEP.search(seg)
@@ -296,8 +296,8 @@ TH_LEVEL_KEYS = [
 
 
 def split_options_th(body: str, with_kap: bool) -> list[str]:
-    if ":" in body or "：" in body:
-        seg = re.split(r"[：:]", body, 1)[1]
+    if re.search(r"[：:；;]", body):
+        seg = re.split(r"[：:；;]", body, 1)[1]
     elif "ระหว่าง" in body:
         seg = body.split("ระหว่าง", 1)[1]
         with_kap = True
