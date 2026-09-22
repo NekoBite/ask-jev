@@ -1,0 +1,246 @@
+[
+  [
+"Should a one-person startup add a CMS?",
+"noul",
+null,
+null
+],
+  [
+"Which fits best: Astro, Next.js, or plain HTML?",
+"choice",
+  [
+"Astro",
+"Next.js",
+"plain HTML"
+],
+null
+],
+  [
+"How risky is migrating this week?",
+"score",
+null,
+"risky"
+],
+  [
+"这个网站应该加一个无头 CMS 吗？",
+"noul",
+null,
+null
+],
+  [
+"這個網站應該加一個無頭 CMS 嗎？",
+"noul",
+null,
+null
+],
+  [
+"是否应该在周五晚上上线？",
+"noul",
+null,
+null
+],
+  [
+"现在换框架值不值得？",
+"noul",
+null,
+null
+],
+  [
+"有没有必要做多语言版本？",
+"noul",
+null,
+null
+],
+  [
+"网站该用 Astro、Next.js 还是纯 HTML？",
+"choice",
+  [
+"Astro",
+"Next.js",
+"纯 HTML"
+],
+null
+],
+  [
+"網站該用 Astro、Next.js 還是純 HTML？",
+"choice",
+  [
+"Astro",
+"Next.js",
+"純 HTML"
+],
+null
+],
+  [
+"我们应该重新设计网站还是保持现状？",
+"choice",
+  [
+"重新设计网站",
+"保持现状"
+],
+null
+],
+  [
+"先做搜索功能还是先做手机版？",
+"choice",
+  [
+"先做搜索功能",
+"先做手机版"
+],
+null
+],
+  [
+"哪个更合适：邮件、LinkedIn 或者电话？",
+"choice",
+  [
+"邮件",
+"LinkedIn",
+"电话"
+],
+null
+],
+  [
+"这周把网站迁移到新框架有多大风险？",
+"score",
+null,
+"risky"
+],
+  [
+"這週把網站遷移到新框架有多大風險？",
+"score",
+null,
+"risky"
+],
+  [
+"客户签约的可能性有多高？",
+"score",
+null,
+"likely"
+],
+  [
+"加一个 CMS 有多难？",
+"score",
+null,
+"hard"
+],
+  [
+"这件事有多紧急？",
+"score",
+null,
+"urgent"
+],
+  [
+"这个方案值得做的程度如何？",
+"score",
+null,
+"valuable"
+],
+  [
+"为什么网站这么慢？",
+null,
+null,
+null
+],
+  [
+"เว็บไซต์นี้ควรเพิ่ม headless CMS ไหม",
+"noul",
+null,
+null
+],
+  [
+"ควรดีพลอยคืนวันศุกร์หรือไม่",
+"noul",
+null,
+null
+],
+  [
+"เปลี่ยนเฟรมเวิร์กตอนนี้คุ้มมั้ยครับ",
+"noul",
+null,
+null
+],
+  [
+"ควรรับข้อเสนองานนี้ไหมคะ",
+"noul",
+null,
+null
+],
+  [
+"ควรใช้ Astro หรือ Next.js ดี",
+"choice",
+  [
+"Astro",
+"Next.js"
+],
+null
+],
+  [
+"เว็บนี้ควรใช้ Astro, Next.js หรือ HTML ล้วน",
+"choice",
+  [
+"Astro",
+"Next.js",
+"HTML ล้วน"
+],
+null
+],
+  [
+"ควรเลือกระหว่าง รถมือสอง กับ รถใหม่ หรือ ไม่ซื้อรถเลย",
+"choice",
+  [
+"รถมือสอง",
+"รถใหม่",
+"ไม่ซื้อรถเลย"
+],
+null
+],
+  [
+"ทำระบบค้นหาก่อน หรือ ทำเวอร์ชันมือถือก่อนดี",
+"choice",
+  [
+"ทำระบบค้นหาก่อน",
+"ทำเวอร์ชันมือถือก่อน"
+],
+null
+],
+  [
+"ช่องทางไหนดีที่สุด: อีเมล, LinkedIn, โทรหา",
+"choice",
+  [
+"อีเมล",
+"LinkedIn",
+"โทรหา"
+],
+null
+],
+  [
+"การย้ายเว็บไซต์ไปเฟรมเวิร์กใหม่ภายในสัปดาห์นี้เสี่ยงแค่ไหน",
+"score",
+null,
+"risky"
+],
+  [
+"โอกาสที่ลูกค้าจะเซ็นสัญญามีมากแค่ไหน",
+"score",
+null,
+"likely"
+],
+  [
+"การเพิ่ม CMS ยากเพียงใด",
+"score",
+null,
+"hard"
+],
+  [
+"งานนี้เร่งด่วนขนาดไหน",
+"score",
+null,
+"urgent"
+],
+  [
+"ทำไมเว็บไซต์ถึงช้า",
+null,
+null,
+null
+]
+]

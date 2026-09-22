@@ -86,77 +86,86 @@ def call_jev(state, questions: dict, api_key: str, retries: int = 4) -> dict:
 
 
 # -------------------------------------------------- natural language -> typed ----
+# Three parsers (English, Chinese, Thai) with the same job: decide whether a sentence
+# is a yes/no, pick-one, or how-much question and pull out the options if any.
+# Score levels come from levels.json in the asker's language. worker/index.js mirrors
+# this section; keep the two in step (node worker/parity.test.mjs checks).
+
+LEVELS = json.loads((HERE / "levels.json").read_text())
+
+CJK_RE = re.compile(r"[一-鿿㐀-䶿]")
+THAI_RE = re.compile(r"[฀-๿]")
+# Characters that differ between the two scripts; whichever set a question uses more wins.
+TRAD_CHARS = set("們這個說為會應該嗎還選風險難緊價麼於與國時經學問題發現務來對開關點動長車電馬鳥東門買賣讓認識語頁網後")
+SIMP_CHARS = set("们这个说为会应该吗还选风险难紧价么于与国时经学问题发现务来对开关点动长车电马鸟东门买卖让认识语页网后")
+
+
+def detect_lang(q: str) -> str:
+    if THAI_RE.search(q):
+        return "th"
+    if CJK_RE.search(q):
+        trad = sum(c in TRAD_CHARS for c in q)
+        simp = sum(c in SIMP_CHARS for c in q)
+        return "zh-Hant" if trad > simp else "zh-Hans"
+    return "en"
+
+
+def levels_for(key: str, lang: str) -> list[str]:
+    table = LEVELS.get(lang, LEVELS["en"])
+    return table.get(key, table["default"])
+
+
+def first_key(text: str, table: list[tuple[str, str]]) -> str:
+    """The level-set key whose keyword pattern appears in the text, else 'default'."""
+    for key, pattern in table:
+        if re.search(pattern, text, re.I):
+            return key
+    return "default"
+
+
+def strip_lead(seg: str, prefix_end: int, leads_re: re.Pattern, sep_re: re.Pattern) -> str:
+    """Drop the preamble before the first option ("Should we use A or B" -> "A or B").
+
+    Keeps it when the second option starts with the same lead text ("先做A还是先做B"):
+    a shared prefix is part of the options, not the preamble.
+    """
+    leads = list(leads_re.finditer(seg[:prefix_end]))
+    if not leads:
+        return seg
+    lead_text = seg[:leads[-1].end()]
+    rest = sep_re.split(seg[prefix_end:], 1)
+    second = rest[1].strip() if len(rest) > 1 else ""
+    if second.startswith(lead_text.strip()):
+        return seg
+    return seg[leads[-1].end():]
+
+
+def clean_options(parts: list[str], strip_chars: str, max_len: int) -> list[str]:
+    opts = [p.strip(strip_chars) for p in parts]
+    opts = [o for o in opts if o]
+    if not 2 <= len(opts) <= 20 or any(len(o) > max_len for o in opts):
+        return []
+    return opts
+
+
+# ---- English -------------------------------------------------------------------
 
 AUX = r"(?:is|are|am|was|were|do|does|did|should|shall|can|could|will|would|has|have|had|must|may|might|need|needs|ought)"
 YESNO_RE = re.compile(rf"^\s*{AUX}\b", re.I)
 DEGREE_RE = re.compile(r"^\s*how\s+(\w+)", re.I)
 WHICH_RE = re.compile(r"^\s*(?:which|what)\b", re.I)
 OR_RE = re.compile(r"\s+or\s+", re.I)
-
-# Score levels describe situations, not degrees (see docs: "Writing good levels").
-# Keyed by the adjective after "how ..."; the last entry is the fallback.
-LEVEL_SETS: list[tuple[tuple[str, ...], list[str]]] = [
-    (("likely", "probable", "plausible", "realistic"), [
-        "Almost certainly will not happen",
-        "Unlikely; would need something unusual to go right",
-        "Could go either way",
-        "Likely; the normal outcome unless something goes wrong",
-        "Almost certain to happen",
-    ]),
-    (("risky", "dangerous", "safe", "unsafe"), [
-        "Nothing meaningful can go wrong",
-        "Small, easily reversible problems are possible",
-        "Real chance of a setback that costs time or money to undo",
-        "Serious harm is likely unless it is actively mitigated",
-        "Likely to cause severe or irreversible damage",
-    ]),
-    (("hard", "difficult", "complex", "complicated", "easy", "simple", "big", "large"), [
-        "Trivial; minutes of routine work",
-        "Straightforward; a known recipe, under a day",
-        "Moderate; several days with some unknowns",
-        "Hard; weeks of work, needs expertise, real unknowns",
-        "Very hard; months of work or may not be achievable",
-    ]),
-    (("urgent", "important", "critical", "pressing"), [
-        "Can wait indefinitely at no cost",
-        "Nice to have soon; waiting weeks costs nothing",
-        "Should be done within days; waiting has a modest cost",
-        "Needed today; delay causes real harm",
-        "Critical right now; every hour of delay causes damage",
-    ]),
-    (("good", "strong", "well", "ready", "mature", "solid", "polished", "healthy", "effective", "clear", "bad", "weak"), [
-        "Poor; fails at its basic purpose",
-        "Weak; works but with major gaps",
-        "Adequate; does the job with noticeable rough edges",
-        "Good; solid with only minor gaps",
-        "Excellent; hard to improve",
-    ]),
-    (("valuable", "useful", "worthwhile", "profitable", "much", "many"), [
-        "No value; nothing gained",
-        "Marginal value; barely worth the effort",
-        "Useful; a clear but modest gain",
-        "High value; a significant gain",
-        "Transformative; changes the outcome entirely",
-    ]),
-    ((), [  # fallback for any other "how <adjective>"
-        "Not at all",
-        "A little",
-        "A moderate amount",
-        "A lot",
-        "An extreme amount",
-    ]),
+EN_LEVEL_KEYS = [
+    ("likely", r"^(?:likely|probable|plausible|realistic)$"),
+    ("risky", r"^(?:risky|dangerous|safe|unsafe)$"),
+    ("hard", r"^(?:hard|difficult|complex|complicated|easy|simple|big|large)$"),
+    ("urgent", r"^(?:urgent|important|critical|pressing)$"),
+    ("good", r"^(?:good|strong|well|ready|mature|solid|polished|healthy|effective|clear|bad|weak)$"),
+    ("valuable", r"^(?:valuable|useful|worthwhile|profitable|much|many)$"),
 ]
 
 
-def levels_for(adjective: str) -> list[str]:
-    adj = adjective.lower()
-    for words, levels in LEVEL_SETS:
-        if adj in words:
-            return levels
-    return LEVEL_SETS[-1][1]
-
-
-def split_options(question: str) -> list[str]:
+def split_options_en(question: str) -> list[str]:
     """Pull 'A, B, or C' style options out of a sentence. Empty list if none found."""
     body = question.strip().rstrip("?.! ").strip()
     if not OR_RE.search(body) and "," not in body:
@@ -184,51 +193,179 @@ def split_options(question: str) -> list[str]:
             seg = seg[leads[-1].end():]
 
     parts = re.split(r"\s*,\s*(?:or|and)\s+|\s+or\s+|\s*,\s*", seg.strip(), flags=re.I)
-    opts = [p.strip(" \"'") for p in parts]
-    opts = [re.sub(r"^(?:rather|instead|just|simply)\s+", "", o, flags=re.I) for o in opts if o]
-    if not 2 <= len(opts) <= 20 or any(len(o) > 80 for o in opts):
-        return []
-    return opts
+    parts = [re.sub(r"^(?:rather|instead|just|simply)\s+", "", p.strip(" \"'"), flags=re.I) for p in parts]
+    return clean_options(parts, " \"'", 80)
 
+
+def parse_en(q: str) -> tuple[str | None, list[str], list[str]]:
+    """Return (kind, options, levels); kind None means 'not a shape Jev can answer'."""
+    if m := DEGREE_RE.match(q):
+        return "score", [], levels_for(first_key(m.group(1), EN_LEVEL_KEYS), "en")
+    if YESNO_RE.match(q) and not WHICH_RE.match(q):
+        found = split_options_en(q)
+        return ("choice", found, []) if found else ("noul", [], [])
+    if WHICH_RE.match(q):
+        found = split_options_en(q)
+        return ("choice", found, []) if found else ("choice", [], [])
+    return None, [], []
+
+
+# ---- Chinese (simplified and traditional) ---------------------------------------
+
+ZH_PUNCT = "？?。！!．.，,、 　\t"
+ZH_YESNO_TAIL = re.compile(r"(?:吗|嗎)$")
+ZH_YESNO_MARK = re.compile(r"是否|是不是|能不能|该不该|該不該|要不要|应不应该|應不應該|会不会|會不會|可不可以|行不行|好不好|"
+                           r"值不值得|有没有|有沒有|需不需要|适不适合|適不適合|对不对|對不對|能否|可否|应否|應否|会否|會否|"
+                           r"合不合适|合不合適|划不划算|靠不靠谱|靠不靠譜|可行|算不算|是不是该|是不是該")
+ZH_YESNO_LEAD = re.compile(r"^(?:应该|應該|该|該|要|能|可以|会|會|是|值得|适合|適合|需要|建议|建議|有必要|现在|現在|我们|我們|我)")
+ZH_DEGREE = re.compile(r"有多|多大|多高|多低|多难|多難|多容易|多可能|多重要|多紧急|多緊急|多危险|多危險|多好|多强|多強|"
+                       r"多成熟|多复杂|多複雜|多值得|多有用|多划算|多严重|多嚴重|多久|多少|程度|几成|幾成")
+ZH_WHICH = re.compile(r"哪个|哪個|哪一个|哪一個|哪种|哪種|哪项|哪項|哪些|哪家|哪款|哪条|哪條|哪套|哪门|哪門|哪位|哪边|哪邊")
+ZH_CHOICE_SEP = re.compile(r"还是|還是|或者|抑或|或(?![许許者])|、|，|,")
+ZH_CHOICE_MARK = re.compile(r"还是|還是|或者|抑或")
+ZH_OPTION_TAIL = re.compile(r"(?:呢|吧|比较好|比較好|比较合适|比較合適|更合适|更合適|更好|更划算|更值得|最好|好|合适|合適|划算|"
+                            r"更适合|更適合|适合|適合|比较|比較|更)+$")
+ZH_LEADS = re.compile(r"(?:用|選|选|做|买|買|去|要|是|该|該|应该|應該|建议|建議|适合|適合|采用|採用|使用|考虑|考慮|先|优先|優先|"
+                      r"学|學|投|加|换|換|改用|改成|改为|改為|叫|念|读|讀|吃|穿|坐|开|開|租|住|选择|選擇|挑|定|走|上|搞|写|寫|推|"
+                      r"上线|上線|部署到|迁移到|遷移到|迁到|遷到|升级到|升級到|从|從|在|把|将|將|跟|和|与|與|留在|留|去|找|请|請|"
+                      r"雇|僱|聘|发|發|寄|放|放在|搬到|搬去|投资|投資|买入|買入|卖|賣|读|讀|报|報|考|申请|申請|办|辦)")
+ZH_LEVEL_KEYS = [
+    ("likely", r"可能|把握|概率|機率|机率|几率|幾率|成功"),
+    ("risky", r"风险|風險|危险|危險|安全"),
+    ("hard", r"难|難|容易|复杂|複雜|简单|簡單|工作量|费力|費力|费劲|費勁|麻烦|麻煩"),
+    ("urgent", r"紧急|緊急|重要|急|优先|優先"),
+    ("good", r"好|强|強|成熟|完善|健康|清楚|清晰|准备|準備|靠谱|靠譜|质量|質量|品质|品質|满意|滿意"),
+    ("valuable", r"值得|有用|价值|價值|划算|收益|回报|回報|意义|意義"),
+]
+
+
+def split_options_zh(body: str) -> list[str]:
+    body = ZH_OPTION_TAIL.sub("", body.strip(ZH_PUNCT)).strip(ZH_PUNCT)
+    if "：" in body or ":" in body:
+        seg = re.split(r"[：:]", body, 1)[1]
+    else:
+        seg = body
+        first_sep = ZH_CHOICE_SEP.search(seg)
+        if first_sep:
+            stripped = strip_lead(seg, first_sep.start(), ZH_LEADS, ZH_CHOICE_SEP)
+            if stripped == seg and ZH_WHICH.search(seg[:first_sep.start()]):
+                stripped = seg[ZH_WHICH.search(seg).end():]
+            seg = stripped
+    seg = ZH_OPTION_TAIL.sub("", seg.strip(ZH_PUNCT))
+    parts = [re.sub(r"^(?:是|用|选|選|去|要|做)", "", p) if len(p) > 2 else p for p in ZH_CHOICE_SEP.split(seg)]
+    return clean_options(parts, ZH_PUNCT + "\"'“”‘’《》「」『』（）()", 40)
+
+
+def parse_zh(q: str, lang: str) -> tuple[str | None, list[str], list[str]]:
+    body = q.strip().rstrip(ZH_PUNCT)
+    if ZH_YESNO_TAIL.search(body):
+        return "noul", [], []
+    if ZH_DEGREE.search(body):
+        return "score", [], levels_for(first_key(body, ZH_LEVEL_KEYS), lang)
+    if ZH_CHOICE_MARK.search(body) or ZH_WHICH.search(body):
+        return "choice", split_options_zh(body), []
+    if ZH_YESNO_MARK.search(body) or ZH_YESNO_LEAD.match(body):
+        return "noul", [], []
+    return None, [], []
+
+
+# ---- Thai ------------------------------------------------------------------------
+
+TH_PUNCT = "？?。！!．. ,，\t"
+TH_PARTICLES = re.compile(r"(?:\s*(?:ครับ|คะ|ค่ะ|นะ|น้า|เหรอ|หรอ|ล่ะ|หละ|จ๊ะ|จ้ะ|ฮะ|ครับผม|นะครับ|นะคะ))+$")
+TH_NEG_TAIL = re.compile(r"(?:หรือไม่|หรือเปล่า|หรือยัง|รึเปล่า|รึยัง|รึไม่|ใช่หรือไม่|หรือ)$")
+TH_YESNO_TAIL = re.compile(r"(?:ไหม|มั้ย|มั๊ย|ใช่ไหม|ใช่มั้ย|ดีไหม|ดีมั้ย|ได้ไหม|ได้มั้ย|ถูกไหม|ถูกต้องไหม|จริงไหม|จริงมั้ย|ดีกว่าไหม|ดีกว่ามั้ย)$")
+TH_YESNO_LEAD = re.compile(r"^(?:ควร|ต้อง|จำเป็น|น่าจะ|เป็นไปได้|ใช่|มี|ได้|สมควร|เหมาะ|คุ้ม|เรา|ผม|ฉัน|บริษัท|ทีม)")
+TH_DEGREE = re.compile(r"แค่ไหน|เพียงใด|ขนาดไหน|มากน้อยเพียงใด|มากน้อยแค่ไหน|มากแค่ไหน|เท่าไหร่|เท่าไร|ระดับไหน|กี่มากน้อย")
+TH_WHICH = re.compile(r"อันไหน|แบบไหน|ตัวไหน|ทางไหน|ข้อไหน|อะไรดี|อันใด|ตัวเลือกไหน|ทางเลือกไหน|ไหนดี|ไหนเหมาะ|อะไรดีกว่า|ไหนคุ้ม")
+TH_OR = re.compile(r"หรือว่า|หรือ(?!ไม่|เปล่า|ยัง)")
+TH_LEADS = re.compile(r"(?:ควรใช้|ควรเลือก|ควรซื้อ|ควรไป|ควรทำ|ควรเริ่มจาก|ควรเรียน|ควรจ้าง|ควรย้ายไป|ควรเปลี่ยนไป|ควรจะ|ควร|"
+                      r"ใช้|เลือก|ซื้อ|ไป|ทำ|เอา|เรียน|ลงทุน|เริ่มจาก|เริ่ม|จะ|คือ|เป็น|ด้วย|อยาก|ต้อง|ย้ายไป|เปลี่ยนไป|"
+                      r"เปลี่ยนเป็น|ไปใช้|ลอง|จ้าง|เข้า|สมัคร|ขอ|รับ|เก็บ|ขาย|ให้|ดู|ฟัง|กิน|ตั้ง|เปิด|ปิด|ส่ง|จอง|ตัดสินใจ|"
+                      r"เลือกเอา|ไปทาง|อยู่|เช่า|พัก|เรียนต่อ|ทำงานที่|ย้ายไปอยู่|ไปอยู่|ไปเที่ยว|ไปกิน)")
+TH_OPTION_TAIL = re.compile(r"\s*(?:ดีกว่ากัน|ดีกว่า|กันดี|ดี|มากกว่ากัน|มากกว่า|เหมาะกว่า|เหมาะสมกว่า|คุ้มกว่า|คุ้มค่ากว่า|"
+                            r"อันไหน.*|แบบไหน.*|ตัวไหน.*|ทางไหน.*|ข้อไหน.*|อะไรดี.*|ไหนดี.*|ไหนเหมาะ.*|ไหนคุ้ม.*|กว่ากัน|กัน)+$")
+TH_LEVEL_KEYS = [
+    ("likely", r"เป็นไปได้|น่าจะ|โอกาส|ความน่าจะเป็น|มีแนวโน้ม|สำเร็จ"),
+    ("risky", r"เสี่ยง|อันตราย|ปลอดภัย"),
+    ("hard", r"ยาก|ง่าย|ซับซ้อน|ยุ่งยาก|ใหญ่"),
+    ("urgent", r"เร่งด่วน|ด่วน|สำคัญ|จำเป็น|รีบ"),
+    ("good", r"ดี|พร้อม|แข็งแรง|มั่นคง|เรียบร้อย|สมบูรณ์|ชัดเจน|แย่|อ่อน|คุณภาพ|พอใจ"),
+    ("valuable", r"คุ้ม|มีประโยชน์|มีค่า|กำไร|ผลตอบแทน"),
+]
+
+
+def split_options_th(body: str, with_kap: bool) -> list[str]:
+    if ":" in body or "：" in body:
+        seg = re.split(r"[：:]", body, 1)[1]
+    elif "ระหว่าง" in body:
+        seg = body.split("ระหว่าง", 1)[1]
+        with_kap = True
+    else:
+        seg = body
+        first_or = TH_OR.search(seg)
+        if first_or:
+            seg = strip_lead(seg, first_or.start(), TH_LEADS, TH_OR)
+    seg = TH_OPTION_TAIL.sub("", seg.strip())
+    sep = r"หรือว่า|หรือ|,|，|/|\s+กับ\s+|กับ" if with_kap else r"หรือว่า|หรือ|,|，|/"
+    return clean_options(re.split(sep, seg), " \"'“”‘’()（）", 80)
+
+
+def parse_th(q: str) -> tuple[str | None, list[str], list[str]]:
+    body = TH_PARTICLES.sub("", q.strip().strip(TH_PUNCT)).strip()
+    if TH_NEG_TAIL.search(body):
+        return "noul", [], []
+    if TH_DEGREE.search(body):
+        return "score", [], levels_for(first_key(body, TH_LEVEL_KEYS), "th")
+    which = bool(TH_WHICH.search(body))
+    if TH_OR.search(body) or which:
+        return "choice", split_options_th(body, which), []
+    if TH_YESNO_TAIL.search(body) or TH_YESNO_LEAD.match(body):
+        return "noul", [], []
+    return None, [], []
+
+
+# ---- dispatch ---------------------------------------------------------------------
 
 def typed_question(question: str, force: str | None, options: list[str] | None,
                    levels: list[str] | None) -> tuple[dict, str]:
     """Return (question object for the API, note about how it was interpreted)."""
     q = question.strip()
+    lang = detect_lang(q)
+    tag = "" if lang == "en" else f" · {lang}"
     if options:
-        return {"type": "choice", "instructions": q, "criteria": {o: None for o in options}}, "choice (options given)"
+        return {"type": "choice", "instructions": q, "criteria": {o: None for o in options}}, "choice (options given)" + tag
     if levels:
-        return {"type": "score", "instructions": q, "criteria": levels}, "score (levels given)"
+        return {"type": "score", "instructions": q, "criteria": levels}, "score (levels given)" + tag
 
     kind = force
     if kind is None:
-        if m := DEGREE_RE.match(q):
-            kind = "score"
-            levels = levels_for(m.group(1))
-        elif YESNO_RE.match(q) and not (WHICH_RE.match(q)):
-            found = split_options(q)
-            kind = "choice" if found else "noul"
-            options = found
-        elif WHICH_RE.match(q):
-            options = split_options(q)
-            kind = "choice" if options else None
+        if lang == "th":
+            kind, options, levels = parse_th(q)
+        elif lang.startswith("zh"):
+            kind, options, levels = parse_zh(q, lang)
         else:
-            kind = None
+            kind, options, levels = parse_en(q)
 
     if kind == "noul":
-        return {"type": "noul", "instructions": q}, "yes/no"
+        return {"type": "noul", "instructions": q}, "yes/no" + tag
     if kind == "choice":
-        options = options or split_options(q)
+        if not options:
+            options = parse_th(q)[1] if lang == "th" else parse_zh(q, lang)[1] if lang.startswith("zh") else split_options_en(q)
         if not options:
             raise JevError("Could not find the options in that question. List them with --options a,b,c "
-                           "or phrase it like 'X, Y, or Z?'")
-        return {"type": "choice", "instructions": q, "criteria": {o: None for o in options}}, "pick one"
+                           "or phrase it like 'X, Y, or Z?' / 'A、B 还是 C？' / 'A หรือ B'")
+        return {"type": "choice", "instructions": q, "criteria": {o: None for o in options}}, "pick one" + tag
     if kind == "score":
-        levels = levels or levels_for((DEGREE_RE.match(q) or [None, "much"])[1])
-        return {"type": "score", "instructions": q, "criteria": levels}, "how much (default levels; pass --levels for sharper ones)"
+        if not levels:
+            adj = (DEGREE_RE.match(q) or [None, "much"])[1] if lang == "en" else q
+            table = EN_LEVEL_KEYS if lang == "en" else TH_LEVEL_KEYS if lang == "th" else ZH_LEVEL_KEYS
+            levels = levels_for(first_key(adj, table), lang)
+        return {"type": "score", "instructions": q, "criteria": levels}, "how much (default levels; pass --levels for sharper ones)" + tag
 
     raise JevError("Jev answers yes/no, pick-one, or how-much questions only; it does not write explanations.\n"
                    "Rephrase, e.g.  'Is X true?'  |  'A, B, or C?'  |  'How risky is X?'\n"
+                   "中文：'……吗？' | 'A、B 还是 C？' | '……有多大风险？'   ไทย: '…ไหม' | 'A หรือ B' | '…แค่ไหน'\n"
                    "or force a shape with --type noul|choice|score plus --options / --levels.")
 
 

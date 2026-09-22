@@ -39,6 +39,17 @@ line per answer, and your recent history. The key stays on your machine: the pag
 thought for this project" and it will consult JEV at each decision point, quote the answer,
 and say whether it agrees.
 
+## Languages
+
+Questions can be asked in **English, Chinese (simplified or traditional) and Thai**. The
+parser recognises the same three shapes in each — yes/no (`…吗？`, `…ไหม`), pick one
+(`A、B 还是 C`, `A หรือ B`), how much (`…有多大风险？`, `…เสี่ยงแค่ไหน`) — and the default
+Score levels come back in the asker's language from [`levels.json`](levels.json). Jev is
+trained primarily on English; TypeSafe says other languages, including CJK scripts, are
+accepted with lower accuracy. In our checks Chinese answers tracked the English ones
+closely and Thai was a little noisier, so read UNSURE and "close call" with that in mind.
+Context can be in any of these languages too.
+
 ## Deploying your own public copy (Cloudflare Worker)
 
 The Worker in `worker/index.js` serves `ui/index.html` as a static asset and proxies

@@ -1,0 +1,183 @@
+{
+  "_comment": "Default Score levels for 'how much' questions, by language. Levels describe situations, not degrees. Shared by ask_jev.py and worker/index.js.",
+  "en": {
+    "likely": [
+      "Almost certainly will not happen",
+      "Unlikely; would need something unusual to go right",
+      "Could go either way",
+      "Likely; the normal outcome unless something goes wrong",
+      "Almost certain to happen"
+    ],
+    "risky": [
+      "Nothing meaningful can go wrong",
+      "Small, easily reversible problems are possible",
+      "Real chance of a setback that costs time or money to undo",
+      "Serious harm is likely unless it is actively mitigated",
+      "Likely to cause severe or irreversible damage"
+    ],
+    "hard": [
+      "Trivial; minutes of routine work",
+      "Straightforward; a known recipe, under a day",
+      "Moderate; several days with some unknowns",
+      "Hard; weeks of work, needs expertise, real unknowns",
+      "Very hard; months of work or may not be achievable"
+    ],
+    "urgent": [
+      "Can wait indefinitely at no cost",
+      "Nice to have soon; waiting weeks costs nothing",
+      "Should be done within days; waiting has a modest cost",
+      "Needed today; delay causes real harm",
+      "Critical right now; every hour of delay causes damage"
+    ],
+    "good": [
+      "Poor; fails at its basic purpose",
+      "Weak; works but with major gaps",
+      "Adequate; does the job with noticeable rough edges",
+      "Good; solid with only minor gaps",
+      "Excellent; hard to improve"
+    ],
+    "valuable": [
+      "No value; nothing gained",
+      "Marginal value; barely worth the effort",
+      "Useful; a clear but modest gain",
+      "High value; a significant gain",
+      "Transformative; changes the outcome entirely"
+    ],
+    "default": ["Not at all", "A little", "A moderate amount", "A lot", "An extreme amount"]
+  },
+  "zh-Hans": {
+    "likely": [
+      "几乎肯定不会发生",
+      "不太可能；除非有意外的好运",
+      "两种结果都有可能",
+      "很可能；除非出问题，否则就是正常结果",
+      "几乎肯定会发生"
+    ],
+    "risky": [
+      "不会出任何实质性问题",
+      "可能出现小问题，容易恢复",
+      "很可能出现需要花时间或金钱才能挽回的挫折",
+      "如果不主动防范，很可能造成严重损害",
+      "很可能造成严重或不可逆的损害"
+    ],
+    "hard": [
+      "非常简单；几分钟的例行工作",
+      "直截了当；有现成做法，一天以内",
+      "中等；需要几天，有一些未知因素",
+      "困难；需要数周，需要专业能力，存在真正的未知",
+      "非常困难；需要数月，或者根本做不到"
+    ],
+    "urgent": [
+      "可以无限期等待，没有任何代价",
+      "最好尽快做；但等几周也没有损失",
+      "应在几天内完成；拖延会有一定代价",
+      "今天就需要；拖延会造成实际损害",
+      "现在就非常紧急；每拖一小时都会造成损失"
+    ],
+    "good": [
+      "很差；无法完成基本目的",
+      "薄弱；能用但有重大缺陷",
+      "尚可；能完成任务但明显粗糙",
+      "良好；扎实，只有小缺陷",
+      "优秀；很难再改进"
+    ],
+    "valuable": [
+      "没有价值；毫无收获",
+      "价值很小；几乎不值得花力气",
+      "有用；收益明确但有限",
+      "价值很高；收益显著",
+      "改变全局；彻底改变结果"
+    ],
+    "default": ["完全没有", "一点点", "中等程度", "很多", "极多"]
+  },
+  "zh-Hant": {
+    "likely": [
+      "幾乎肯定不會發生",
+      "不太可能；除非有意外的好運",
+      "兩種結果都有可能",
+      "很可能；除非出問題，否則就是正常結果",
+      "幾乎肯定會發生"
+    ],
+    "risky": [
+      "不會出任何實質性問題",
+      "可能出現小問題，容易恢復",
+      "很可能出現需要花時間或金錢才能挽回的挫折",
+      "如果不主動防範，很可能造成嚴重損害",
+      "很可能造成嚴重或不可逆的損害"
+    ],
+    "hard": [
+      "非常簡單；幾分鐘的例行工作",
+      "直截了當；有現成做法，一天以內",
+      "中等；需要幾天，有一些未知因素",
+      "困難；需要數週，需要專業能力，存在真正的未知",
+      "非常困難；需要數月，或者根本做不到"
+    ],
+    "urgent": [
+      "可以無限期等待，沒有任何代價",
+      "最好盡快做；但等幾週也沒有損失",
+      "應在幾天內完成；拖延會有一定代價",
+      "今天就需要；拖延會造成實際損害",
+      "現在就非常緊急；每拖一小時都會造成損失"
+    ],
+    "good": [
+      "很差；無法完成基本目的",
+      "薄弱；能用但有重大缺陷",
+      "尚可；能完成任務但明顯粗糙",
+      "良好；紮實，只有小缺陷",
+      "優秀；很難再改進"
+    ],
+    "valuable": [
+      "沒有價值；毫無收穫",
+      "價值很小；幾乎不值得花力氣",
+      "有用；收益明確但有限",
+      "價值很高；收益顯著",
+      "改變全局；徹底改變結果"
+    ],
+    "default": ["完全沒有", "一點點", "中等程度", "很多", "極多"]
+  },
+  "th": {
+    "likely": [
+      "แทบจะไม่มีทางเกิดขึ้นแน่นอน",
+      "ไม่น่าจะเกิด ต้องมีอะไรผิดปกติถึงจะเป็นไปได้",
+      "เป็นไปได้ทั้งสองทาง",
+      "น่าจะเกิด เป็นผลลัพธ์ปกติถ้าไม่มีอะไรผิดพลาด",
+      "แทบจะเกิดขึ้นแน่นอน"
+    ],
+    "risky": [
+      "ไม่มีอะไรสำคัญที่จะผิดพลาดได้",
+      "อาจมีปัญหาเล็กน้อยที่แก้กลับได้ง่าย",
+      "มีโอกาสจริงที่จะสะดุดจนต้องเสียเวลาหรือเงินแก้ไข",
+      "มีแนวโน้มเกิดความเสียหายร้ายแรงหากไม่ป้องกัน",
+      "มีแนวโน้มเกิดความเสียหายรุนแรงหรือแก้ไขไม่ได้"
+    ],
+    "hard": [
+      "ง่ายมาก งานประจำไม่กี่นาที",
+      "ตรงไปตรงมา มีวิธีทำอยู่แล้ว ใช้เวลาไม่ถึงวัน",
+      "ปานกลาง ใช้เวลาหลายวันและมีสิ่งที่ไม่รู้อยู่บ้าง",
+      "ยาก ใช้เวลาหลายสัปดาห์ ต้องใช้ความเชี่ยวชาญและมีความไม่แน่นอนจริง",
+      "ยากมาก ใช้เวลาหลายเดือนหรืออาจทำไม่สำเร็จ"
+    ],
+    "urgent": [
+      "รอได้ไม่มีกำหนดโดยไม่มีต้นทุน",
+      "ควรทำเร็ว ๆ นี้ แต่รอหลายสัปดาห์ก็ไม่เสียอะไร",
+      "ควรทำภายในไม่กี่วัน การรอมีต้นทุนพอสมควร",
+      "ต้องทำวันนี้ การล่าช้าสร้างความเสียหายจริง",
+      "วิกฤตตอนนี้ ทุกชั่วโมงที่ล่าช้าสร้างความเสียหาย"
+    ],
+    "good": [
+      "แย่ ทำหน้าที่พื้นฐานไม่ได้",
+      "อ่อน ใช้งานได้แต่มีช่องโหว่ใหญ่",
+      "พอใช้ ทำงานได้แต่ยังหยาบอยู่ชัดเจน",
+      "ดี แน่นหนา มีข้อบกพร่องเล็กน้อยเท่านั้น",
+      "ยอดเยี่ยม แทบไม่มีอะไรต้องปรับปรุง"
+    ],
+    "valuable": [
+      "ไม่มีค่า ไม่ได้อะไรเลย",
+      "ค่าน้อยมาก แทบไม่คุ้มแรง",
+      "มีประโยชน์ ได้ผลชัดเจนแต่ไม่มาก",
+      "มีค่าสูง ได้ผลอย่างมีนัยสำคัญ",
+      "พลิกเกม เปลี่ยนผลลัพธ์ทั้งหมด"
+    ],
+    "default": ["ไม่เลย", "เล็กน้อย", "ปานกลาง", "มาก", "มากที่สุด"]
+  }
+}

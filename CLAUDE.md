@@ -17,4 +17,6 @@ the source of truth for request/response shapes.
   at `/Library/Frameworks/Python.framework/Versions/3.14/bin/python3` (certs fixed there).
 
 Jev answers only yes/no (Noul), pick-one (Choice) and how-much (Score) questions; it does not
-generate text. Score levels should describe situations, not degrees.
+generate text. Score levels should describe situations, not degrees. The parser handles English,
+Chinese (both scripts) and Thai; default levels per language live in `levels.json`; expected
+shapes per phrasing live in `worker/golden.json` (add a case there when you extend a parser).
